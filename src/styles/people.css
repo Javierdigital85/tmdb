@@ -1,0 +1,49 @@
+/* people.css */
+.swiper-container {
+  position: relative;
+}
+
+.swiper-slide {
+  text-align: center;
+}
+
+.actores {
+  position: relative;
+  overflow: hidden;
+}
+
+.people {
+  max-width: 100%;
+  height: auto;
+  transition: transform 0.3s ease-in-out;
+}
+
+.actores:hover .people {
+  transform: scale(1.1);
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.actores:hover .overlay {
+  opacity: 1;
+}
+
+.nombreActor {
+  margin: 0;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+}

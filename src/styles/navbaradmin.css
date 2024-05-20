@@ -1,0 +1,14 @@
+.bg-admin {
+  background-color: dodgerblue;
+}
+.admin {
+  color: white;
+}
+h1 {
+  margin-top: 56px;
+}
+
+.user-nav-option {
+  background-color: rgb(228, 74, 74);
+  border-radius: 10px;
+}

@@ -1,0 +1,13 @@
+.pNav {
+  padding-top: 5px;
+  color: aliceblue;
+}
+.admin-nav-option {
+  background-color: dodgerblue;
+  border-radius: 20px;
+}
+
+.navbar-toggler {
+  width: 14%;
+  padding: 0.5rem;
+}

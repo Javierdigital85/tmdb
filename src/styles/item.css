@@ -1,0 +1,20 @@
+.imagenIndividual {
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+.card-img-top-individual {
+  height: 5px;
+}
+.img-fluid-individual {
+  width: 500px;
+  margin-bottom: 10px;
+}
+.boton-fav {
+  width: 200px;
+}
+.detalle {
+  color: aliceblue;
+}
+.detalle:hover {
+  color: aliceblue;
+}

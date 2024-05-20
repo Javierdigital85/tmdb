@@ -1,0 +1,39 @@
+.tabla {
+  align-items: center;
+  left: 80px;
+  text-align: center;
+}
+table {
+  margin-top: 00px;
+
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 58%;
+  border: 1px solid #ddd;
+  background-color: black;
+}
+th {
+  color: dodgerblue;
+}
+tr {
+  color: white;
+  font-size: 20px;
+}
+
+tr:nth-child(even) {
+  background-color: grey;
+}
+
+.botones {
+  width: 40%;
+  display: flex;
+  justify-content: flex-start;
+}
+.tablainput {
+  width: 58%;
+  display: flex;
+}
+a {
+  color: white;
+  text-decoration: none;
+}

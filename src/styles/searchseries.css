@@ -1,0 +1,13 @@
+.searchseries {
+  display: flex;
+}
+
+.backgroundseries {
+  background: linear-gradient(to right, #0c0909 50%, transparent 60%),
+    url("https://www.cronista.com/files/image/473/473081/62f2b9f8452a1.jpg") top
+      right no-repeat; /* Modificado */
+  background-position: right;
+  min-height: 100vh;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}

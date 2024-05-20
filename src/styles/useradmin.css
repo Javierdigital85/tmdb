@@ -1,0 +1,8 @@
+.tarjeta {
+  background: linear-gradient(to right, #0c0909 50%, transparent 60%),
+    url("https://w0.peakpx.com/wallpaper/171/84/HD-wallpaper-300-movie.jpg") top
+      right no-repeat; /* Modificado */
+
+  background-position: right;
+  min-height: 93vh;
+}
