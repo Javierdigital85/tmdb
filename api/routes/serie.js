@@ -32,7 +32,7 @@ serieRouter.get("/favseries", (req, res) => {
       console.log("HOLLAAAA", array);
 
       const promesas = array.map((id) => {
-        return axios.get(`${apiURL}tv/${id}`, {
+        return axios.get(`${apiURL}/tv/${id}`, {
           params: { api_key: apiKey },
         });
       });

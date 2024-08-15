@@ -25,7 +25,7 @@ function Favorites() {
           }
         )
         .then((res) => sertFavs(res.data))
-        .catch((error) => ("Error al obtener favoritos", error));
+        .catch((error) => ("Error al obtener favoritos"));
     }
   }, [id]);
 

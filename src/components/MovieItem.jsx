@@ -110,7 +110,7 @@ const MovieItem = () => {
   return (
     <>
       <Navbar />
-      <div class="container  text-center">
+      <div className="container  text-center">
         <h1>{film.original_title}</h1>
         <p className="detalle">Detalles:{film.overview}</p>
         <p className="detalle">Fecha de Estreno: {film.release_date}</p>

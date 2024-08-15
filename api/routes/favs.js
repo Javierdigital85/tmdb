@@ -30,7 +30,7 @@ favsRouter.get("/favmovies", (req, res) => {
       console.log("HOLLAAAA", array);
 
       const promesas = array.map((id) => {
-        return axios.get(`${apiURL}movie/${id}`, {
+        return axios.get(`${apiURL}/movie/${id}`, {
           params: { api_key: apiKey },
         });
       });

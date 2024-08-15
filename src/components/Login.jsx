@@ -91,7 +91,7 @@ const Login = () => {
             </button>
           </div>
           <p className="forgot-password text-right">
-            <Link to={"/forgot"} className="link">
+            <Link to={`/forgot`} className="link">
               ¿Olvidaste tu contraseña?{" "}
             </Link>
           </p>

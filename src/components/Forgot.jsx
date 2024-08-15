@@ -20,7 +20,7 @@ const Forgot = () => {
         .put(
           "/api/users/forgot",
           {
-            email: email,
+            email,
           },
           {
             returning: true,

@@ -192,31 +192,63 @@ userRouter.post("/logout", (req, res) => {
 //   const { password } = req.body;
 // });
 
+//nueva logica para el nuevo password!
+userRouter.put("/forgot", (req, res) => {
+  const email = req.body.email;
+  User.findOne({ where: { email } }).then((user) => {
+    if (!user) return res.sendStatus(401);
+    const payload = {
+      id: user.id,
+      lastName: user.lastName,
+      email: user.email,
+      password: user.password,
+    };
+    const token = generateToken(payload);
+    user.token = token;
+
+    user.save().then(() => {
+      const restorePasswordLink = `http://localhost:3000/resetPassword/:${user.token}`;
+
+      const info = transporter.sendMail({
+        from: `Forgot password ${process.env.SMTP_USER}`,
+        to: user.email,
+        subject: "recuperar la contraseña",
+        html: `
+              <p>Hemos recibido una solicitud para restablecer la contraseña de tu cuenta. Si no realizaste esta solicitud, ignora este correo. Para restablecer tu contraseña, haz clic en el siguiente enlace: </p><a href="${restorePasswordLink}">${restorePasswordLink}</a>
+             `,
+      });
+      info.then(() => {
+        res.status(200).send(user.email);
+      });
+    });
+  });
+});
+
 //RECUPERAR CONTRASEÑA
 
-const emailbox = (email) => {
-  const resetPasswordLink = "http://localhost:3000/resetPassword";
-  transporter
-    .sendMail({
-      from: `Forgot password ${process.env.SMTP_USER}`,
-      to: email,
-      subject: "recuperar la contraseña",
-      html: `
-      <p>Hemos recibido una solicitud para restablecer la contraseña de tu cuenta. Si no realizaste esta solicitud, ignora este correo. Para restablecer tu contraseña, haz clic en el siguiente enlace: 
-       </p>
-       <p><a href="${resetPasswordLink}">Restablecer Contraseña</p>`,
-    })
-    .then(() => console.log("Mensaje enviado"))
-    .catch((err) => console.error(err));
-};
+// const emailbox = (email, id) => {
+//   const resetPasswordLink = `http://localhost:3000/resetPassword/:${id}`;
+//   transporter
+//     .sendMail({
+//       from: `Forgot password ${process.env.SMTP_USER}`,
+//       to: email,
+//       subject: "recuperar la contraseña",
+//       html: `
+//       <p>Hemos recibido una solicitud para restablecer la contraseña de tu cuenta. Si no realizaste esta solicitud, ignora este correo. Para restablecer tu contraseña, haz clic en el siguiente enlace:
+//        </p>
+//        <p><a href="${resetPasswordLink}">Restablecer Contraseña</p>`,
+//     })
+//     .then(() => console.log("Mensaje enviado"))
+//     .catch((err) => console.error(err));
+// };
 
 //ENVIO DE MAIL CITA ACEPTADA
 
-userRouter.put("/forgot", (req, res) => {
-  const email = req.body.email;
-  emailbox(email);
-  res.status(200).json({ message: "Email envaido correctamente" });
-});
+// userRouter.post("/forgot", (req, res) => {
+//   const email = req.body.email;
+//   emailbox(email);
+//   res.status(200).json({ message: "Email envaido correctamente" });
+// });
 
 //NUEVA CONTRASEÑA
 // userRouter.put(`/reset/:${email}`, (req, res) => {
@@ -230,20 +262,31 @@ userRouter.put("/forgot", (req, res) => {
 // });
 
 // Ruta para restablecer la contraseña
-userRouter.put("/reset", (req, res) => {
-  const { email } = req.query;
+userRouter.post("/reset/:id", (req, res) => {
+  const userIdFromUrl = req.params.id;
+  const userIdFromRequest = req.user.id;
   const { password } = req.body;
-  User.update(
-    { password },
-    {
-      where: { email },
-      returning: true,
+  try {
+    if (userIdFromRequest !== userIdFromUrl) {
+      return res.status(403).send("Unauthorized");
     }
-  )
-    .then(([rows, user]) => {
+    if (req.body.password) {
+      req.body.password = bcrypt.hashSync(req.body.password, 10);
+    }
+    // const { id } = req.params;
+    // const { password } = req.body;
+    User.update(
+      { password },
+      {
+        where: { id: userIdFromRequest },
+        returning: true,
+      }
+    ).then(([rows, user]) => {
       res.status(201).send(user);
-    })
-    .catch((error) => console.log(error));
+    });
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 module.exports = userRouter;

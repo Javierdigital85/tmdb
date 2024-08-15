@@ -85,7 +85,7 @@ const App = () => {
           <Route path="/seriefavoritos/serie/:id" element={<SerieItem />} />
           <Route path="/upcomingmovies" element={<UpcomingMovies />} />
           <Route path="/trendingmovies" element={<TredingMovies />} />
-          <Route path="/resetPassword" element={<ResetPassword />} />
+          <Route path="/resetPassword/:id" element={<ResetPassword />} />
         </Routes>
       </BrowserRouter>
     </>

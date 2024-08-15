@@ -8,7 +8,7 @@ import FilterSideBar from "./FilterSideBar";
 
 // import { useParams } from "react-router"; // Importa el hook useParams
 
-const API_URL = "https://api.themoviedb.org/3/";
+const API_URL = "https://api.themoviedb.org/3";
 const API_KEY = "a9dccccd77d6bf4e52b46cbd40148267";
 
 const UpcomingMovies = () => {

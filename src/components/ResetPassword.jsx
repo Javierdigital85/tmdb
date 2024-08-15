@@ -2,17 +2,18 @@ import React, { useState } from "react";
 import Navbar from "./Navbar";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
-import { setRecover } from "../redux/recover";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { setUser } from "../redux/user";
 
 // const user = useSelector((state) => state.user);
 // const password = user.password;
 const ResetPassword = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const recover = useSelector((state) => state.recover);
-
+  const user = useSelector((state) => state.user);
+  // const recover = useSelector((state) => state.recover);
+  const { id } = useParams();
   // const [password, setPasssword] = useState("");
   // const [newPassword, setNewPassword] = useState("");
   const [passUpdate, setPassUpdate] = useState({
@@ -59,20 +60,16 @@ const ResetPassword = () => {
       errorHandlerDos();
     } else {
       axios
-        .put(
-          `/api/users/reset`,
-          {
-            params: { email: recover },
-          },
-          {
-            password: passUpdate.password,
-          },
+        .post(
+          `/api/users/reset/${id}`,
+
+          { email: user.email, password: passUpdate.password },
           {
             withCredentials: true,
           }
         )
         .then((res) => {
-          dispatch(setRecover(res.data));
+          dispatch(setUser(res.data));
           console.log("La solicitud PUT se hizo correctamente");
           toast.success("Contraseña Actualizada exitosamente");
           acceptHandler();
