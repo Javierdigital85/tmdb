@@ -2,8 +2,10 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 // import Grid from "../commons/Grid";
 import GridSeries from "../commons/GridSeries";
+import "../styles/favoritos.css";
 
 function SerieFavorites() {
   const [favs, setFavs] = useState([]);
@@ -15,7 +17,7 @@ function SerieFavorites() {
         .get(
           "/api/serie/favseries",
           {
-            params: { prospectId: id },
+            params: { userId: id },
           },
           {
             withCredentials: true,
@@ -31,8 +33,31 @@ function SerieFavorites() {
   return (
     <>
       <Navbar />
-      <h1>Favourites Series</h1>
-      <GridSeries collection={favs} />
+      <h1 className="favTitulo">Favourites Series</h1>
+
+      {favs.length > 0 ? (
+        <GridSeries collection={favs} />
+      ) : (
+        <div className="empty-favorites">
+          <div className="empty-favorites-content">
+            <i className="bi bi-tv empty-favorites-icon"></i>
+            <h2 className="empty-favorites-title">
+              No tienes series favoritas aún
+            </h2>
+            <p className="empty-favorites-text">
+              Descubre series increíbles y agrégalas a tus favoritos para verlas
+              aquí
+            </p>
+            <Link
+              to="/searchseries"
+              className="btn btn-primary btn-lg empty-favorites-btn"
+            >
+              <i className="bi bi-search me-2"></i>
+              Explorar Series
+            </Link>
+          </div>
+        </div>
+      )}
     </>
   );
 }

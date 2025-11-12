@@ -46,7 +46,7 @@ const App = () => {
     if (userId) {
       axios
         .get("/api/favs/favmovies", {
-          params: { prospectId: userId },
+          params: { userId: userId },
         })
         .then((res) => res.data)
         .then((data) => {
@@ -62,7 +62,7 @@ const App = () => {
     if (userId) {
       axios
         .get("/api/serie/favseries", {
-          params: { prospectId: userId },
+          params: { userId: userId },
         })
         .then((res) => res.data)
         .then((data) => {

@@ -1,21 +1,20 @@
 const express = require("express");
 const serieRouter = express.Router();
 const Serie = require("../models/Serie");
-const User = require("../models/User");
 const axios = require("axios");
-require("dotenv").config();
-const apiURL = process.env.API_URL;
-const apiKey = process.env.API_KEY;
+const envs = require("../config/envs");
+const apiURL = envs.API_URL;
+const apiKey = envs.API_KEY;
 
 serieRouter.post("/register", (req, res) => {
-  const { prospectId, serieId } = req.body;
+  const { userId, serieId } = req.body;
   Serie.findOrCreate({
-    where: { prospectId, serieId },
-    defaults: { prospectId },
+    where: { userId, serieId },
+    defaults: { userId },
   })
-    .then(([user, created]) => {
-      if (created) return res.status(201).send(created);
-      res.status(200).send(created);
+    .then(([serie, created]) => {
+      if (created) return res.status(201).send(serie);
+      res.status(200).send(serie);
     })
     .catch((error) => console.log(error));
 });

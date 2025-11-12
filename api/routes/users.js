@@ -6,9 +6,9 @@ const { validateAuth } = require("../middlewares/auth");
 const axios = require("axios");
 const { transporter } = require("../config/mailer");
 const bcrypt = require("bcrypt");
-require("dotenv").config();
-const apiURL = process.env.API_URL;
-const apiKey = process.env.API_KEY;
+const envs = require("../config/envs");
+const apiURL = envs.API_URL;
+const apiKey = envs.API_KEY;
 
 //Registro
 userRouter.post("/register", (req, res) => {
@@ -182,9 +182,7 @@ userRouter.get("/movies/:id", (req, res) => {
 //Ruta para el logout
 userRouter.post("/logout", (req, res) => {
   res.clearCookie("token");
-  res
-    .sendStatus(204)
-    .catch((error) => console.log("No se puedo hacer el logout", error));
+  res.sendStatus(204);
 });
 
 // userRouter("/reset/:id", (req, res) => {
@@ -228,12 +226,14 @@ userRouter.put("/forgot", (req, res) => {
       console.log("💾 Token guardado en base de datos");
 
       // Link SIN ":" antes del token
-      const restorePasswordLink = `http://localhost:3000/resetPassword/${user.resetPasswordToken}`;
+      // Usar FRONTEND_URL en producción o localhost en desarrollo
+      const baseUrl = envs.FRONTEND_URL;
+      const restorePasswordLink = `${baseUrl}/resetPassword/${user.resetPasswordToken}`;
 
       console.log("📨 Enviando email a:", user.email);
 
       return transporter.sendMail({
-        from: `Forgot password ${process.env.SMTP_USER}`,
+        from: `Forgot password ${envs.SMTP_USER}`,
         to: user.email,
         subject: "recuperar la contraseña",
         html: `

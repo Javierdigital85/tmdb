@@ -113,11 +113,14 @@ const Navbar = () => {
               ) : (
                 <></>
               )}
-              <li className="nav-item">
-                <Link to="/register" className="nav-link">
-                  Register
-                </Link>
-              </li>
+
+              {!user.id && (
+                <li className="nav-item">
+                  <Link to="/register" className="nav-link">
+                    Register
+                  </Link>
+                </li>
+              )}
 
               {user.id ? (
                 <p className="pNav">Welcome {user.name}!</p>

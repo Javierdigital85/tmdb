@@ -10,18 +10,54 @@ const envs = require("./config/envs");
 const authAPI = require("./routes");
 const morgan = require("morgan");
 
-app.use(express.static(path.resolve(__dirname, "public")));
-
+// Middleware
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+
+// CORS - Configuración para desarrollo y producción
+if (process.env.NODE_ENV === "production") {
+  // Producción: Solo permitir el dominio específico
+  const allowedOrigins = [process.env.FRONTEND_URL];
+  app.use(
+    cors({
+      origin: function (origin, callback) {
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+          const msg =
+            "The CORS policy for this site does not allow access from the specified Origin.";
+          return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+      },
+      credentials: true,
+    })
+  );
+} else {
+  // Desarrollo: Permitir localhost:3000
+  app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+}
 
 app.use(morgan("tiny"));
-//express Routing
+
+// API Routes
 app.use("/api", authAPI);
-app.get("/*", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
+
+// Servir archivos estáticos del frontend en producción
+if (process.env.NODE_ENV === "production") {
+  // Servir archivos estáticos de React
+  app.use(express.static(path.join(__dirname, "../build")));
+
+  // Todas las rutas que no sean /api deben servir index.html
+  app.get("/*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../build", "index.html"));
+  });
+} else {
+  // En desarrollo, servir desde public (si existe)
+  app.use(express.static(path.join(__dirname, "public")));
+  app.get("/*", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "index.html"));
+  });
+}
 
 //Sincronizamos nuetro modelo hecho con Sequelize en el servidor
 db.sync({ force: false }).then(() => {

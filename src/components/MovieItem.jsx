@@ -112,7 +112,7 @@ const MovieItem = () => {
 
     axios
       .post("/api/favs/register", {
-        prospectId: userId,
+        userId: userId,
         movieId: id,
       })
       .then((result) => {
@@ -121,7 +121,7 @@ const MovieItem = () => {
           // Actualizar el estado de Redux después de agregar
           axios
             .get("/api/favs/favmovies", {
-              params: { prospectId: userId },
+              params: { userId: userId },
             })
             .then((res) => res.data)
             .then((data) => {

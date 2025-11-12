@@ -1,14 +1,13 @@
 const nodemailer = require("nodemailer");
-require("dotenv").config();
+const envs = require("./envs");
 
 const transporter = nodemailer.createTransport({
-  host: process.env.HOST_MAILER,
-  port: process.env.SMTP_PORT,
+  host: envs.HOST_MAILER,
+  port: envs.SMTP_PORT,
   secure: true,
   auth: {
-    // TODO: replace `user` and `pass` values from <https://forwardemail.net>
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASSWORD,
+    user: envs.SMTP_USER,
+    pass: envs.SMTP_PASSWORD,
   },
 });
 transporter.verify().then(() => {

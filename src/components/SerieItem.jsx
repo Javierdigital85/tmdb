@@ -108,7 +108,7 @@ function SerieItem() {
     );
     axios
       .post("/api/serie/register", {
-        prospectId: userId,
+        userId: userId,
         serieId: id,
       })
       .then((result) => {
@@ -117,7 +117,7 @@ function SerieItem() {
           // Actualizar el estado de Redux después de agregar
           axios
             .get("/api/serie/favseries", {
-              params: { prospectId: userId },
+              params: { userId: userId },
             })
             .then((res) => res.data)
             .then((data) => {

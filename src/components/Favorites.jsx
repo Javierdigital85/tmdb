@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import Grid from "../commons/Grid";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import "../styles/favoritos.css";
 
 function Favorites() {
@@ -17,15 +18,15 @@ function Favorites() {
         .get(
           "/api/favs/favmovies",
           {
-            params: { prospectId: id },
+            params: { userId: id },
           },
-          // Aquí, prospectId se incluirá en la URL como /api/favs/?prospectId=id.
+          // Aquí, userId se incluirá en la URL como /api/favs/?userId=id.
           {
             withCredentials: true,
           }
         )
         .then((res) => sertFavs(res.data))
-        .catch((error) => ("Error al obtener favoritos"));
+        .catch((error) => "Error al obtener favoritos");
     }
   }, [id]);
 
@@ -33,7 +34,30 @@ function Favorites() {
     <>
       <Navbar />
       <h1 className="favTitulo">Favourites Movies</h1>
-      <Grid collection={favs} />
+
+      {favs.length > 0 ? (
+        <Grid collection={favs} />
+      ) : (
+        <div className="empty-favorites">
+          <div className="empty-favorites-content">
+            <i className="bi bi-heart empty-favorites-icon"></i>
+            <h2 className="empty-favorites-title">
+              No tienes películas favoritas aún
+            </h2>
+            <p className="empty-favorites-text">
+              Explora nuestro catálogo y agrega tus películas favoritas para
+              verlas aquí
+            </p>
+            <Link
+              to="/search"
+              className="btn btn-primary btn-lg empty-favorites-btn"
+            >
+              <i className="bi bi-search me-2"></i>
+              Explorar Películas
+            </Link>
+          </div>
+        </div>
+      )}
     </>
   );
 }

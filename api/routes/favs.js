@@ -1,21 +1,20 @@
 const express = require("express");
 const favsRouter = express.Router();
 const Favs = require("../models/Favs");
-const User = require("../models/User");
 const axios = require("axios");
-require("dotenv").config();
-const apiURL = process.env.API_URL;
-const apiKey = process.env.API_KEY;
+const envs = require("../config/envs");
+const apiURL = envs.API_URL;
+const apiKey = envs.API_KEY;
 
 favsRouter.post("/register", (req, res) => {
-  const { prospectId, movieId } = req.body;
+  const { userId, movieId } = req.body;
   Favs.findOrCreate({
-    where: { prospectId, movieId },
-    defaults: { prospectId },
+    where: { userId, movieId },
+    defaults: { userId },
   })
-    .then(([user, created]) => {
-      if (created) return res.status(201).send(created);
-      res.status(200).send(created);
+    .then(([fav, created]) => {
+      if (created) return res.status(201).send(fav);
+      res.status(200).send(fav);
     })
     .catch((error) => console.log(error));
 });
