@@ -1,21 +1,17 @@
 import React, { useState } from "react";
 import Navbar from "./Navbar";
-import { useDispatch, useSelector } from "react-redux";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import { setUser } from "../redux/user";
 
-// const user = useSelector((state) => state.user);
-// const password = user.password;
 const ResetPassword = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
-  // const recover = useSelector((state) => state.recover);
+  // Obtener el token de la URL (viene en el parámetro :id de la ruta)
   const { id } = useParams();
-  // const [password, setPasssword] = useState("");
-  // const [newPassword, setNewPassword] = useState("");
+  const token = id || "";
+
+  console.log("🔑 Token recibido en frontend:", token);
+
   const [passUpdate, setPassUpdate] = useState({
     password: "",
     passwordRepeat: "",
@@ -50,42 +46,73 @@ const ResetPassword = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (passUpdate.password !== passUpdate.passwordRepeat) {
-      console.log("No coinciden los passwords");
-      errorHandler();
-    } else if (
-      !passUpdate.password.trim() &&
-      !passUpdate.passwordRepeat.trim()
-    ) {
-      errorHandlerDos();
-    } else {
-      axios
-        .post(
-          `/api/users/reset/${id}`,
 
-          { email: user.email, password: passUpdate.password },
-          {
-            withCredentials: true,
-          }
-        )
-        .then((res) => {
-          dispatch(setUser(res.data));
-          console.log("La solicitud PUT se hizo correctamente");
-          toast.success("Contraseña Actualizada exitosamente");
-          acceptHandler();
-        })
-        .then(() => {
-          navigate("/login");
-        })
-        .catch((error) => {
-          console.log(error, "este es mi error");
-        });
+    // Resetear mensajes de error
+    setMessageError(false);
+    setMessageErrorDos(false);
+
+    // Validar que las contraseñas coincidan
+    if (passUpdate.password !== passUpdate.passwordRepeat) {
+      console.log("❌ Las contraseñas no coinciden");
+      errorHandler();
+      return;
     }
+
+    // Validar que los campos no estén vacíos
+    if (!passUpdate.password.trim() || !passUpdate.passwordRepeat.trim()) {
+      console.log("❌ Los campos están vacíos");
+      errorHandlerDos();
+      return;
+    }
+
+    // Validar que haya un token
+    if (!token) {
+      toast.error(
+        "Token inválido. Por favor, solicita un nuevo enlace de recuperación."
+      );
+      return;
+    }
+
+    // Enviar la nueva contraseña al backend
+    console.log("📤 Enviando request a:", `/api/users/reset/${token}`);
+    console.log("🔒 Con password:", passUpdate.password ? "✅" : "❌");
+
+    axios
+      .post(`/api/users/reset/${token}`, { password: passUpdate.password })
+      .then((res) => {
+        console.log("✅ Contraseña actualizada exitosamente:", res.data);
+        toast.success("Contraseña actualizada exitosamente");
+        acceptHandler();
+
+        // Redirigir al login después de 2 segundos
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+      })
+      .catch((error) => {
+        console.log("❌ Error completo:", error);
+        console.log("❌ Error response:", error.response);
+        console.log("❌ Error status:", error.response?.status);
+        console.log("❌ Error data:", error.response?.data);
+
+        if (error.response && error.response.status === 404) {
+          toast.error(
+            "Token inválido o expirado. Por favor, solicita un nuevo enlace."
+          );
+        } else if (error.response && error.response.status === 400) {
+          toast.error(error.response.data);
+        } else {
+          toast.error(
+            `Error al actualizar la contraseña: ${
+              error.response?.data || error.message
+            }`
+          );
+        }
+      });
   };
   return (
     <div className="vista-login">
       <Navbar />
-      <ToastContainer />
       <div className="estiloLogin">
         <form className="formLogin" onSubmit={handleSubmit}>
           <h3>Forgot Password</h3>

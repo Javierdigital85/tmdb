@@ -7,35 +7,49 @@ const Forgot = () => {
   const [email, setEmail] = useState("");
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [emailError, setErrorSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const handleEmail = (e) => {
     setEmail(e.target.value);
+    // Limpiar errores cuando el usuario empieza a escribir
+    setErrorSubmitted(false);
+    setErrorMessage("");
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Limpiar estados previos
+    setErrorSubmitted(false);
+    setEmailSubmitted(false);
+    setErrorMessage("");
+
+    // Validar que el email no esté vacío
     if (!email.trim()) {
       setErrorSubmitted(true);
-    } else {
-      axios
-        .put(
-          "/api/users/forgot",
-          {
-            email,
-          },
-          {
-            returning: true,
-          }
-        )
-        .then((res) => {
-          if (res.status === 200) {
-            setEmailSubmitted(true);
-          }
-        });
-      // .catch((error) => {
-      //   setErrorSubmitted(true);
-      //   console.log("HA OCURRIDO UN ERROR CON LA RECUPERACION", error);
-      // });
+      setErrorMessage("Debe ingresar su e-mail.");
+      return;
     }
+
+    console.log("📧 Enviando solicitud de recuperación para:", email);
+
+    axios
+      .put("/api/users/forgot", { email }, { returning: true })
+      .then((res) => {
+        if (res.status === 200) {
+          console.log("✅ Email enviado exitosamente");
+          setEmailSubmitted(true);
+        }
+      })
+      .catch((error) => {
+        console.log("❌ Error al enviar email:", error);
+        setErrorSubmitted(true);
+        if (error.response && error.response.status === 404) {
+          setErrorMessage("El email no está registrado en el sistema.");
+        } else {
+          setErrorMessage("Ha ocurrido un error. Intenta nuevamente.");
+        }
+      });
   };
 
   return (
@@ -62,17 +76,13 @@ const Forgot = () => {
             <button type="submit" className="btn btn-primary  mx-2">
               Enviar
             </button>
-            {emailSubmitted ? (
-              <p className="text-success medium mt-2">Email enviado</p>
-            ) : (
-              <p className="medium mt-2">Complete el campo,por favor.</p>
-            )}
-            {emailError ? (
-              <p className="text-danger medium mt-2">
-                Debe ingresar su e-mail.
+            {emailSubmitted && (
+              <p className="text-success medium mt-2">
+                ✅ Email enviado exitosamente. Revisa tu bandeja de entrada.
               </p>
-            ) : (
-              ""
+            )}
+            {emailError && (
+              <p className="text-danger medium mt-2">❌ {errorMessage}</p>
             )}
           </div>
         </form>

@@ -13,80 +13,100 @@ const API_KEY = "a9dccccd77d6bf4e52b46cbd40148267";
 
 const UpcomingMovies = () => {
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState(null);
   const [pagination, setPagination] = useState(1);
+
   const handlePaginationNext = () => {
     setPagination(pagination + 1);
   };
+
   const handlePaginationPrevious = () => {
     setPagination(pagination - 1);
   };
 
-  // const { type } = useParams(); // Obtiene 'type' de los parámetros de la URL
+  const handleFilterApply = (filteredMovies) => {
+    if (filteredMovies === null) {
+      // Limpiar filtros - mostrar datos originales
+      setFilteredData(null);
+    } else {
+      // Aplicar filtros
+      setFilteredData(filteredMovies);
+    }
+  };
 
   useEffect(() => {
-    //useEffect recibe una funcion
-    axios //   /api/movies
+    axios
       .get(`${API_URL}/movie/upcoming?api_key=${API_KEY}&page=${pagination}`)
       .then((res) => {
         setData(res.data.results);
         console.log("xxxxxxxxxxxx", res.data);
       })
       .catch((error) => console.log("ERROR"));
-  }, [pagination]); //tambien useEffect recibe un arreglo de dependencias o de valores
-  // console.log("xxxxxxxxxxxxxxxx", data);
+  }, [pagination]);
+
+  // Determinar qué datos mostrar
+  const moviesToDisplay = filteredData !== null ? filteredData : data;
   return (
     <>
       <Navbar />
       <h1>Upcoming Movies</h1>
-      <FilterSideBar />
-      <nav aria-label="..." className="d-flex justify-content-center">
-        <ul className="pagination">
-          <li className="page-item">
-            <button
-              className="btn btn-secondary ml-1"
-              style={{ width: "150px" }}
-              onClick={handlePaginationPrevious}
-            >
-              Previous
-            </button>
-          </li>
+      <FilterSideBar onFilterApply={handleFilterApply} />
 
-          <li className="page-item">
-            <button
-              className="btn btn-primary ml-1"
-              style={{ width: "150px" }}
-              onClick={handlePaginationNext}
-            >
-              Next
-            </button>
-          </li>
-        </ul>
-      </nav>
+      {filteredData === null && (
+        <nav aria-label="..." className="d-flex justify-content-center">
+          <ul className="pagination">
+            <li className="page-item">
+              <button
+                className="btn btn-secondary ml-1"
+                style={{ width: "150px" }}
+                onClick={handlePaginationPrevious}
+                disabled={pagination === 1}
+              >
+                Previous
+              </button>
+            </li>
 
-      <Grid collection={data} />
-      <nav aria-label="..." className="d-flex justify-content-center">
-        <ul className="pagination">
-          <li className="page-item">
-            <button
-              className="btn btn-secondary ml-1"
-              style={{ width: "150px" }}
-              onClick={handlePaginationPrevious}
-            >
-              Previous
-            </button>
-          </li>
+            <li className="page-item">
+              <button
+                className="btn btn-primary ml-1"
+                style={{ width: "150px" }}
+                onClick={handlePaginationNext}
+              >
+                Next
+              </button>
+            </li>
+          </ul>
+        </nav>
+      )}
 
-          <li className="page-item">
-            <button
-              className="btn btn-primary ml-1"
-              style={{ width: "150px" }}
-              onClick={handlePaginationNext}
-            >
-              Next
-            </button>
-          </li>
-        </ul>
-      </nav>
+      <Grid collection={moviesToDisplay} />
+
+      {filteredData === null && (
+        <nav aria-label="..." className="d-flex justify-content-center">
+          <ul className="pagination">
+            <li className="page-item">
+              <button
+                className="btn btn-secondary ml-1"
+                style={{ width: "150px" }}
+                onClick={handlePaginationPrevious}
+                disabled={pagination === 1}
+              >
+                Previous
+              </button>
+            </li>
+
+            <li className="page-item">
+              <button
+                className="btn btn-primary ml-1"
+                style={{ width: "150px" }}
+                onClick={handlePaginationNext}
+              >
+                Next
+              </button>
+            </li>
+          </ul>
+        </nav>
+      )}
     </>
   );
 };

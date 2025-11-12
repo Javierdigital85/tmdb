@@ -7,7 +7,7 @@ import { setUser } from "../redux/user";
 import Navbar from "./Navbar";
 import "../styles/login.css";
 import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -48,13 +48,14 @@ const Login = () => {
         toast.success("INICIASTE SESIÓN");
         navigate("/");
       })
-      .catch((error) => console.log(error));
+      .catch(() => {
+        toast.error("Email o contraseña incorrectos");
+      });
   };
 
   return (
     <div className="vista-login">
       <Navbar />
-      <ToastContainer />
       <div className="estiloLogin">
         <form onSubmit={handleLogin} className="formLogin">
           <div className="mb-3">

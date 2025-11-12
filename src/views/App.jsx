@@ -2,13 +2,14 @@ import Home from "../components/Home";
 import Register from "../components/Registro";
 import Login from "../components/Login";
 import { Route, Routes } from "react-router";
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 import MovieItem from "../components/MovieItem";
 import Search from "../components/Search";
 import { setUser } from "../redux/user";
 import { useDispatch } from "react-redux";
 import { setFavoritos } from "../redux/favs";
+import { setSerieFavoritos } from "../redux/serieFavs";
 import axios from "axios";
 import Usersadmin from "../components/Usersadmin";
 import Favorites from "../components/Favorites";
@@ -26,6 +27,8 @@ import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   const dispatch = useDispatch();
+  const [userId, setUserId] = useState(null);
+
   // SET_USERS
   useEffect(() => {
     axios
@@ -33,21 +36,42 @@ const App = () => {
       .then((res) => res.data)
       .then((user) => {
         dispatch(setUser(user.user));
+        setUserId(user.user.id); // Guardar el userId para cargar favoritos
       })
       .catch(() => console.log("Necesitas loguearte con tu cuenta"));
   }, [dispatch]);
 
-  //ESTE SERIA EL NUEVO SET_FAVORITOS
+  //ESTE SERIA EL NUEVO SET_FAVORITOS - Solo carga cuando hay userId
   useEffect(() => {
-    axios
-      .get("/api/favs/favmovies")
-      .then((res) => res.data)
-      .then((data) => {
-        dispatch(setFavoritos(data));
-        console.log("FAVORITOS =>", data);
-      })
-      .catch(() => console.log("error"));
-  }, [dispatch]);
+    if (userId) {
+      axios
+        .get("/api/favs/favmovies", {
+          params: { prospectId: userId },
+        })
+        .then((res) => res.data)
+        .then((data) => {
+          dispatch(setFavoritos(data));
+          console.log("FAVORITOS =>", data);
+        })
+        .catch(() => console.log("error"));
+    }
+  }, [dispatch, userId]);
+
+  //SET_SERIE_FAVORITOS - Solo carga cuando hay userId
+  useEffect(() => {
+    if (userId) {
+      axios
+        .get("/api/serie/favseries", {
+          params: { prospectId: userId },
+        })
+        .then((res) => res.data)
+        .then((data) => {
+          dispatch(setSerieFavoritos(data));
+          console.log("SERIE FAVORITOS =>", data);
+        })
+        .catch(() => console.log("error"));
+    }
+  }, [dispatch, userId]);
 
   return (
     <>
@@ -67,6 +91,7 @@ const App = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/search" element={<Search />} />
           <Route path="/searchseries" element={<SearchSeries />} />
+          <Route path="/searchseries/serie/:id" element={<SerieItem />} />
           <Route path="/login" element={<Login />} />
           <Route path="/movie/:id" element={<MovieItem />} />
           <Route path="/search/movie/:id" element={<MovieItem />} />

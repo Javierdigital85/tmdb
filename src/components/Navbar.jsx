@@ -84,16 +84,6 @@ const Navbar = () => {
                   Search Movies
                 </Link>
               </li>
-              {/* <li className="nav-item">
-                <Link to="/searchseries" className="nav-link">
-                  Search Series
-                </Link>
-              </li> */}
-              <li className="nav-item">
-                <Link to="/series" className="nav-link">
-                  Series
-                </Link>
-              </li>
               {user.id ? (
                 <li className="nav-item">
                   <Link to="/favoritos" className="nav-link">
@@ -103,6 +93,17 @@ const Navbar = () => {
               ) : (
                 <></>
               )}
+              <li className="nav-item">
+                <Link to="/searchseries" className="nav-link">
+                  Search Series
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link to="/series" className="nav-link">
+                  Series
+                </Link>
+              </li>
+
               {user.id ? (
                 <li className="nav-item">
                   <Link to="/seriefavoritos" className="nav-link">

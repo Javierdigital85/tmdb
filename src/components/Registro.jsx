@@ -7,7 +7,7 @@ import Navbar from "./Navbar";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import "../styles/registro.css";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Register = () => {
@@ -60,7 +60,6 @@ const Register = () => {
   return (
     <div className="vista-register">
       <Navbar />
-      <ToastContainer />
       <div className="estiloRegister">
         <form onSubmit={handleSubmit} className="formRegister">
           <div className="mb-3">

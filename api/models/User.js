@@ -40,7 +40,7 @@ User.init(
       defaultValue: false,
     },
     resetPasswordToken: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT, // Cambiado de STRING a TEXT para tokens largos
     },
     resetPasswordExpires: {
       type: DataTypes.DATE,

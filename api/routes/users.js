@@ -195,21 +195,44 @@ userRouter.post("/logout", (req, res) => {
 //nueva logica para el nuevo password!
 userRouter.put("/forgot", (req, res) => {
   const email = req.body.email;
-  User.findOne({ where: { email } }).then((user) => {
-    if (!user) return res.sendStatus(401);
-    const payload = {
-      id: user.id,
-      lastName: user.lastName,
-      email: user.email,
-      password: user.password,
-    };
-    const token = generateToken(payload);
-    user.token = token;
 
-    user.save().then(() => {
-      const restorePasswordLink = `http://localhost:3000/resetPassword/:${user.token}`;
+  console.log("📧 Solicitud de recuperación para email:", email);
 
-      const info = transporter.sendMail({
+  User.findOne({ where: { email } })
+    .then((user) => {
+      if (!user) {
+        console.log("❌ Usuario no encontrado:", email);
+        return res.status(404).send("Email no registrado");
+      }
+
+      console.log("✅ Usuario encontrado:", user.email);
+
+      const payload = {
+        id: user.id,
+        lastName: user.lastName,
+        email: user.email,
+        password: user.password,
+      };
+      const token = generateToken(payload);
+
+      // Guardar token en resetPasswordToken (columna correcta)
+      user.resetPasswordToken = token;
+      // Opcional: establecer fecha de expiración (48 horas)
+      user.resetPasswordExpires = new Date(Date.now() + 48 * 60 * 60 * 1000);
+
+      return user.save();
+    })
+    .then((user) => {
+      if (!user) return; // Si no hay usuario, ya se envió la respuesta 404
+
+      console.log("💾 Token guardado en base de datos");
+
+      // Link SIN ":" antes del token
+      const restorePasswordLink = `http://localhost:3000/resetPassword/${user.resetPasswordToken}`;
+
+      console.log("📨 Enviando email a:", user.email);
+
+      return transporter.sendMail({
         from: `Forgot password ${process.env.SMTP_USER}`,
         to: user.email,
         subject: "recuperar la contraseña",
@@ -217,11 +240,17 @@ userRouter.put("/forgot", (req, res) => {
               <p>Hemos recibido una solicitud para restablecer la contraseña de tu cuenta. Si no realizaste esta solicitud, ignora este correo. Para restablecer tu contraseña, haz clic en el siguiente enlace: </p><a href="${restorePasswordLink}">${restorePasswordLink}</a>
              `,
       });
-      info.then(() => {
-        res.status(200).send(user.email);
-      });
+    })
+    .then((info) => {
+      if (!info) return; // Si no hay info, ya se envió la respuesta 404
+
+      console.log("✅ Email enviado exitosamente:", info.messageId);
+      res.status(200).send("Email enviado");
+    })
+    .catch((error) => {
+      console.log("❌ Error en /forgot:", error);
+      res.status(500).send("Error al procesar la solicitud");
     });
-  });
 });
 
 //RECUPERAR CONTRASEÑA
@@ -261,32 +290,65 @@ userRouter.put("/forgot", (req, res) => {
 //   });
 // });
 
-// Ruta para restablecer la contraseña
-userRouter.post("/reset/:id", (req, res) => {
-  const userIdFromUrl = req.params.id;
-  const userIdFromRequest = req.user.id;
+// Ruta para restablecer la contraseña (NO requiere autenticación)
+userRouter.post("/reset/:token", (req, res) => {
+  const tokenFromUrl = req.params.token;
   const { password } = req.body;
-  try {
-    if (userIdFromRequest !== userIdFromUrl) {
-      return res.status(403).send("Unauthorized");
-    }
-    if (req.body.password) {
-      req.body.password = bcrypt.hashSync(req.body.password, 10);
-    }
-    // const { id } = req.params;
-    // const { password } = req.body;
-    User.update(
-      { password },
-      {
-        where: { id: userIdFromRequest },
-        returning: true,
+
+  console.log("🔑 Token recibido:", tokenFromUrl);
+  console.log("🔒 Nueva contraseña recibida:", password ? "✅" : "❌");
+
+  // Buscar usuario por resetPasswordToken
+  User.findOne({ where: { resetPasswordToken: tokenFromUrl } })
+    .then((user) => {
+      if (!user) {
+        console.log("❌ Token inválido o expirado");
+        return res.status(404).send("Token inválido o expirado");
       }
-    ).then(([rows, user]) => {
-      res.status(201).send(user);
+
+      console.log("✅ Usuario encontrado:", user.email);
+
+      // Opcional: Verificar si el token ha expirado
+      if (user.resetPasswordExpires && user.resetPasswordExpires < new Date()) {
+        console.log("❌ Token expirado");
+        return res
+          .status(400)
+          .send("El token ha expirado. Solicita un nuevo enlace.");
+      }
+
+      // Generar nuevo salt y hashear la contraseña
+      const newSalt = bcrypt.genSaltSync(8);
+      const hashedPassword = bcrypt.hashSync(password, newSalt);
+
+      console.log("🔐 Nuevo salt generado y contraseña hasheada");
+
+      // Actualizar contraseña, salt y limpiar token
+      return User.update(
+        {
+          password: hashedPassword,
+          salt: newSalt, // ⚠️ IMPORTANTE: Actualizar el salt también
+          resetPasswordToken: null, // Limpiar el token después de usarlo
+          resetPasswordExpires: null, // Limpiar la fecha de expiración
+        },
+        {
+          where: { id: user.id },
+          returning: true,
+        }
+      );
+    })
+    .then((result) => {
+      if (result && result[1] && result[1].length > 0) {
+        console.log("✅ Contraseña actualizada exitosamente");
+        res.status(200).send({
+          message: "Contraseña actualizada exitosamente",
+          user: result[1][0],
+        });
+      }
+    })
+    .catch((error) => {
+      console.log("❌ Error al restablecer contraseña:", error);
+      res.status(500).send("Error al restablecer contraseña");
     });
-  } catch (error) {
-    console.log(error);
-  }
 });
 
 module.exports = userRouter;
