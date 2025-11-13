@@ -16,22 +16,8 @@ app.use(cookieParser());
 
 // CORS - Configuración para desarrollo y producción
 if (process.env.NODE_ENV === "production") {
-  // Producción: Solo permitir el dominio específico
-  const allowedOrigins = [process.env.FRONTEND_URL];
-  app.use(
-    cors({
-      origin: function (origin, callback) {
-        if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) === -1) {
-          const msg =
-            "The CORS policy for this site does not allow access from the specified Origin.";
-          return callback(new Error(msg), false);
-        }
-        return callback(null, true);
-      },
-      credentials: true,
-    })
-  );
+  // Producción: Frontend y backend en el mismo dominio
+  app.use(cors({ origin: true, credentials: true }));
 } else {
   // Desarrollo: Permitir localhost:3000
   app.use(cors({ origin: "http://localhost:3000", credentials: true }));
