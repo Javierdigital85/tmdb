@@ -3,8 +3,8 @@ const envs = require("./envs");
 
 const transporter = nodemailer.createTransport({
   host: envs.HOST_MAILER,
-  port: envs.SMTP_PORT,
-  secure: true,
+  port: parseInt(envs.SMTP_PORT),
+  secure: envs.SMTP_SECURE,
   auth: {
     user: envs.SMTP_USER,
     pass: envs.SMTP_PASSWORD,

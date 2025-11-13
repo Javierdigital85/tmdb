@@ -17,7 +17,8 @@ module.exports = {
 
   // Email SMTP
   HOST_MAILER: process.env.HOST_MAILER || "smtp.gmail.com",
-  SMTP_PORT: process.env.SMTP_PORT || 465,
+  SMTP_PORT: process.env.SMTP_PORT || 587,
+  SMTP_SECURE: process.env.SMTP_SECURE === "true",
   SMTP_USER: process.env.SMTP_USER, // NO valor por defecto - debe estar en .env
   SMTP_PASSWORD: process.env.SMTP_PASSWORD, // NO valor por defecto - debe estar en .env
 
