@@ -3,6 +3,14 @@ const envs = require("./envs");
 // Usar Resend en producción, Nodemailer en desarrollo
 let transporter;
 
+// DEBUG: Ver valores de las variables de entorno
+console.log("🔍 DEBUG - NODE_ENV:", process.env.NODE_ENV);
+console.log("🔍 DEBUG - RESEND_API_KEY exists:", !!process.env.RESEND_API_KEY);
+console.log(
+  "🔍 DEBUG - RESEND_API_KEY value:",
+  process.env.RESEND_API_KEY ? "SET" : "NOT SET"
+);
+
 if (process.env.NODE_ENV === "production" && process.env.RESEND_API_KEY) {
   // Producción: Usar Resend (API HTTP - no bloqueado por Render)
   const { Resend } = require("resend");
