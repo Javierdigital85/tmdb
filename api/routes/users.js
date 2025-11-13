@@ -233,9 +233,9 @@ userRouter.put("/forgot", (req, res) => {
       console.log("📨 Enviando email a:", user.email);
 
       return transporter.sendMail({
-        from: `Forgot password ${envs.SMTP_USER}`,
+        from: `"TMDB App" <${envs.SMTP_USER}>`,
         to: user.email,
-        subject: "recuperar la contraseña",
+        subject: "Recuperar contraseña - TMDB App",
         html: `
               <p>Hemos recibido una solicitud para restablecer la contraseña de tu cuenta. Si no realizaste esta solicitud, ignora este correo. Para restablecer tu contraseña, haz clic en el siguiente enlace: </p><a href="${restorePasswordLink}">${restorePasswordLink}</a>
              `,
