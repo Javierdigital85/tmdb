@@ -26,9 +26,15 @@ if (process.env.NODE_ENV === "production" && process.env.RESEND_API_KEY) {
         html: mailOptions.html,
       });
 
+      // DEBUG: Ver qué devuelve Resend
+      console.log("🔍 DEBUG - Resend result:", JSON.stringify(result, null, 2));
+      console.log("🔍 DEBUG - result.data:", result.data);
+      console.log("🔍 DEBUG - result.id:", result.id);
+      console.log("🔍 DEBUG - result.data?.id:", result.data?.id);
+
       // Adaptar respuesta de Resend al formato de Nodemailer
       return {
-        messageId: result.data?.id || result.id,
+        messageId: result.data?.id || result.id || "resend-email-sent",
         response: result,
       };
     },
