@@ -19,12 +19,18 @@ if (process.env.NODE_ENV === "production" && process.env.RESEND_API_KEY) {
   // Adaptar Resend para que tenga la misma interfaz que Nodemailer
   transporter = {
     sendMail: async (mailOptions) => {
-      return resend.emails.send({
+      const result = await resend.emails.send({
         from: mailOptions.from || envs.SMTP_USER,
         to: mailOptions.to,
         subject: mailOptions.subject,
         html: mailOptions.html,
       });
+
+      // Adaptar respuesta de Resend al formato de Nodemailer
+      return {
+        messageId: result.data?.id || result.id,
+        response: result,
+      };
     },
   };
 
