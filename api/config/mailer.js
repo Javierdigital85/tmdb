@@ -1,27 +1,26 @@
 const envs = require("./envs");
 
-// Usar SendGrid en producción, Nodemailer en desarrollo
+// Usar Resend en producción, Nodemailer en desarrollo
 let transporter;
 
-if (process.env.NODE_ENV === "production" && process.env.SENDGRID_API_KEY) {
-  // Producción: Usar SendGrid (API HTTP - no bloqueado por Render)
-  const sgMail = require("@sendgrid/mail");
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+if (process.env.NODE_ENV === "production" && process.env.RESEND_API_KEY) {
+  // Producción: Usar Resend (API HTTP - no bloqueado por Render)
+  const { Resend } = require("resend");
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
-  // Adaptar SendGrid para que tenga la misma interfaz que Nodemailer
+  // Adaptar Resend para que tenga la misma interfaz que Nodemailer
   transporter = {
     sendMail: async (mailOptions) => {
-      const msg = {
-        to: mailOptions.to,
+      return resend.emails.send({
         from: mailOptions.from || envs.SMTP_USER,
+        to: mailOptions.to,
         subject: mailOptions.subject,
         html: mailOptions.html,
-      };
-      return sgMail.send(msg);
+      });
     },
   };
 
-  console.log("📧 Using SendGrid for emails");
+  console.log("📧 Using Resend for emails");
 } else {
   // Desarrollo: Usar Nodemailer (SMTP)
   const nodemailer = require("nodemailer");

@@ -23,19 +23,20 @@ services:
       - key: SECRET
         generateValue: true
       - key: API_URL
-        sync: false 
+        sync: false
       - key: API_KEY
-        sync: false 
+        sync: false
       - key: HOST_MAILER
-        sync: false 
+        sync: false
       - key: SMTP_PORT
-        sync: false 
+        sync: false
       - key: SMTP_USER
-        sync: false 
+        sync: false
       - key: SMTP_PASSWORD
-        sync: false 
+        sync: false
       - key: FRONTEND_URL
-        sync: false 
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
       - key: SERVER_PORT
-        value: 3001 
-
+        value: 3001
