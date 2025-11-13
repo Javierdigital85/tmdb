@@ -10,9 +10,9 @@ const transporter = nodemailer.createTransport({
     pass: envs.SMTP_PASSWORD,
   },
 });
-transporter.verify().then(() => {
-  console.log("Ready for send e-mails");
-});
+
+// Nota: transporter.verify() removido para evitar timeout en Render
+// La conexión se verificará cuando se envíe el primer email
 
 // // async..await is not allowed in global scope, must use a wrapper
 // async function main() {
