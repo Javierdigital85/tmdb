@@ -19,8 +19,11 @@ if (process.env.NODE_ENV === "production" && process.env.RESEND_API_KEY) {
   // Adaptar Resend para que tenga la misma interfaz que Nodemailer
   transporter = {
     sendMail: async (mailOptions) => {
+      // Resend requiere dominio verificado, usar email de prueba de Resend
+      const fromEmail = "TMDB App <onboarding@resend.dev>";
+
       const result = await resend.emails.send({
-        from: mailOptions.from || envs.SMTP_USER,
+        from: fromEmail,
         to: mailOptions.to,
         subject: mailOptions.subject,
         html: mailOptions.html,
