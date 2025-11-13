@@ -77,9 +77,18 @@ const Forgot = () => {
               Enviar
             </button>
             {emailSubmitted && (
-              <p className="text-success medium mt-2">
-                ✅ Email enviado exitosamente. Revisa tu bandeja de entrada.
-              </p>
+              <div className="text-success medium mt-2">
+                <p className="mb-1">
+                  ✅ Email enviado exitosamente. Revisa tu bandeja de entrada.
+                </p>
+                <p
+                  className="mb-0"
+                  style={{ fontSize: "0.9em", color: "#343a40" }}
+                >
+                  Puedes cerrar esta ventana después de restablecer tu
+                  contraseña.
+                </p>
+              </div>
             )}
             {emailError && (
               <p className="text-danger medium mt-2">❌ {errorMessage}</p>
